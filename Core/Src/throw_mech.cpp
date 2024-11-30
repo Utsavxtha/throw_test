@@ -67,7 +67,7 @@ void Throw_Mech::update_state()
 {
   bldc[0].program();
   bldc[1].program();
-  if (joystick.update())
+  if (!joystick.update())
     return;
   if (!joystick.connected() || joystick.clicked(PS))
   {
