@@ -23,6 +23,7 @@ void Throw_Mech::run()
   update_speed();
   bldc[0].set_speed(bldc_speeds[0]);
   bldc[1].set_speed(bldc_speeds[1]);
+  // print_speeds();
   prevTick = HAL_GetTick();
 }
 
@@ -35,27 +36,30 @@ void Throw_Mech::update_speed()
     bldc_speeds[1] = 0.0f;
     break;
 
-  case DIFFERENTIAL_MANUAL:
-    bldc_speeds[0] = (float)joystick.lt() / 255;
-    bldc_speeds[1] = (float)joystick.rt() / 255;
+  case DIFFERENTIAL:
+    bldc_speeds[0] = joystick.lt();
+    bldc_speeds[1] = joystick.rt();
     break;
 
-  case DIFFERENTIAL_MANUAL_HOLD:
-    if (joystick.pressed(L3))
+  case DIFFERENTIAL_HOLD:
+    if (joystick.pressed(L1))
     {
-      bldc_speeds[0] = (float)joystick.lt() / 255;
-      bldc_speeds[1] = (float)joystick.rt() / 255;
+      bldc_speeds[0] = joystick.lt();
+    }
+    if (joystick.pressed(R1))
+    {
+      bldc_speeds[1] = joystick.rt();
     }
 
-  case SAME_MANUAL:
-    bldc_speeds[0] = (float)joystick.lt() / 255;
-    bldc_speeds[1] = (float)joystick.lt() / 255;
+  case SAME:
+    bldc_speeds[0] = joystick.lt();
+    bldc_speeds[1] = joystick.lt();
 
-  case SAME_AUTO:
-    if (joystick.pressed(L3))
+  case SAME_HOLD:
+    if (joystick.pressed(L1))
     {
-      bldc_speeds[0] = (float)joystick.lt() / 255;
-      bldc_speeds[1] = (float)joystick.lt() / 255;
+      bldc_speeds[0] = joystick.lt();
+      bldc_speeds[1] = joystick.lt();
     }
 
   default:
@@ -67,26 +71,32 @@ void Throw_Mech::update_state()
 {
   bldc[0].program();
   bldc[1].program();
-  if (!joystick.update())
-    return;
-  if (!joystick.connected() || joystick.clicked(PS))
+  joystick.update();
+  if (!joystick.connected() || joystick.clicked(PS) || !bldc[0].is_ready() || !bldc[1].is_ready())
   {
     set_state(IDLE);
   }
   else if (joystick.pressed(L1))
   {
+    bldc_speeds[0] = 0.0f;
+    bldc_speeds[1] = 0.0f;
     if (joystick.clicked(SQUARE))
-      set_state(DIFFERENTIAL_MANUAL);
+      set_state(DIFFERENTIAL);
     if (joystick.clicked(TRIANGLE))
-      set_state(DIFFERENTIAL_MANUAL_HOLD);
+      set_state(DIFFERENTIAL_HOLD);
     if (joystick.clicked(CIRCLE))
-      set_state(SAME_AUTO);
+      set_state(SAME);
     if (joystick.clicked(CROSS))
-      set_state(SAME_MANUAL);
+      set_state(SAME_HOLD);
   }
 }
 
 void Throw_Mech::set_state(Mech_States _state)
 {
   state = _state;
+}
+
+void Throw_Mech::print_speeds()
+{
+  // printf("State:%d BLDC speeds 1: %f 2: %f\n", (int)state, bldc_speeds[0], bldc_speeds[1]);
 }

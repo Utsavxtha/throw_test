@@ -40,7 +40,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
   if (huart->Instance == throw_mech.joystick.uart.get_uart_instance())
   {
-    throw_mech.set_state(IDLE);
     throw_mech.joystick.init();
   }
 }

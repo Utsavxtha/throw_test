@@ -13,16 +13,17 @@
 #include "robotlib/communication/uart.hpp"
 #include "robotlib/actuators/bldc.hpp"
 #include "robotlib/joystick/joystick.hpp"
+#include "robotlib/common/processor_type.h"
 
 #define MECH_LOOP_PERIOD 10
 
 enum Mech_States
 {
   IDLE,
-  DIFFERENTIAL_MANUAL,
-  DIFFERENTIAL_MANUAL_HOLD,
-  SAME_MANUAL,
-  SAME_AUTO,
+  DIFFERENTIAL,
+  DIFFERENTIAL_HOLD,
+  SAME,
+  SAME_HOLD,
 };
 
 class Throw_Mech
@@ -37,12 +38,14 @@ public:
   Joystick joystick{&JOY_UART};
   BLDC bldc[2] = {BLDC(&BLDC_TIMER, TIM_CHANNEL_1), BLDC(&BLDC_TIMER, TIM_CHANNEL_2)};
 
-  void set_speed();
   void set_state(Mech_States);
   void update_speed();
   void update_state();
   void init();
   void run();
+  void print_speeds();
+
+  // void p
 };
 
 extern Throw_Mech throw_mech;
