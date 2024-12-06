@@ -78,8 +78,6 @@ void Throw_Mech::update_state()
   }
   else if (joystick.pressed(L1))
   {
-    bldc_speeds[0] = 0.0f;
-    bldc_speeds[1] = 0.0f;
     if (joystick.clicked(SQUARE))
       set_state(DIFFERENTIAL);
     if (joystick.clicked(TRIANGLE))
@@ -93,6 +91,8 @@ void Throw_Mech::update_state()
 
 void Throw_Mech::set_state(Mech_States _state)
 {
+  bldc_speeds[0] = 0.0f;
+  bldc_speeds[1] = 0.0f;
   state = _state;
 }
 
